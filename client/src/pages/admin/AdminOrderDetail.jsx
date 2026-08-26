@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { adminService } from '../../services/endpoints';
 import { formatPrice, formatDate, getStatusColor } from '../../utils/helpers';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import OrderTimeline from '../../components/OrderTimeline';
 import toast from 'react-hot-toast';
 import { FiArrowLeft, FiSave } from 'react-icons/fi';
 
@@ -69,6 +70,25 @@ const AdminOrderDetail = () => {
           <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(order.orderStatus)}`}>{order.orderStatus}</span>
           <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(order.paymentStatus)}`}>{order.paymentStatus}</span>
         </div>
+      </div>
+
+      <div className="card mb-6">
+        <h3 className="font-semibold mb-2">Order Progress</h3>
+        <OrderTimeline currentStatus={order.orderStatus} />
+        {order.statusHistory && order.statusHistory.length > 0 && (
+          <div className="mt-4 border-t pt-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Status History</h4>
+            <div className="space-y-2">
+              {[...order.statusHistory].reverse().map((h, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm">
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getStatusColor(h.status)}`}>{h.status}</span>
+                  <span className="text-gray-500">{formatDate(h.updatedAt)}</span>
+                  {h.note && <span className="text-gray-400 italic">— {h.note}</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

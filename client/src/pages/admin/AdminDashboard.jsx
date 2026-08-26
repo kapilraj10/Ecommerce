@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { adminService } from '../../services/endpoints';
 import { formatPrice, formatDate, getStatusColor } from '../../utils/helpers';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { SalesBarChart, OrderStatusPieChart } from '../../components/SalesChart';
 import { FiUsers, FiPackage, FiShoppingBag, FiDollarSign, FiClock, FiCheckCircle } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -11,14 +12,9 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      try {
-        const res = await adminService.getDashboard();
-        setStats(res.data.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      try { const res = await adminService.getDashboard(); setStats(res.data.data); }
+      catch (err) { console.error(err); }
+      finally { setLoading(false); }
     };
     fetchStats();
   }, []);
@@ -35,6 +31,15 @@ const AdminDashboard = () => {
     { label: 'Delivered Orders', value: stats.deliveredOrders, icon: FiCheckCircle, color: 'bg-emerald-500' },
   ];
 
+  const monthlySales = stats.monthlySales || [];
+  const orderStatusData = [
+    { name: 'Pending', value: stats.pendingOrders || 0 },
+    { name: 'Processing', value: stats.processingOrders || 0 },
+    { name: 'Shipped', value: stats.shippedOrders || 0 },
+    { name: 'Delivered', value: stats.deliveredOrders || 0 },
+    { name: 'Cancelled', value: stats.cancelledOrders || 0 },
+  ].filter((d) => d.value > 0);
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
@@ -42,16 +47,22 @@ const AdminDashboard = () => {
         {cards.map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-100 p-5">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">{label}</p>
-                <p className="text-2xl font-bold mt-1">{value}</p>
-              </div>
-              <div className={`${color} p-3 rounded-xl text-white`}>
-                <Icon className="h-5 w-5" />
-              </div>
+              <div><p className="text-sm text-gray-500">{label}</p><p className="text-2xl font-bold mt-1">{value}</p></div>
+              <div className={`${color} p-3 rounded-xl text-white`}><Icon className="h-5 w-5" /></div>
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <h2 className="font-semibold mb-4">Sales Overview</h2>
+          <SalesBarChart data={monthlySales} />
+        </div>
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <h2 className="font-semibold mb-4">Order Status Distribution</h2>
+          <OrderStatusPieChart data={orderStatusData} />
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100">

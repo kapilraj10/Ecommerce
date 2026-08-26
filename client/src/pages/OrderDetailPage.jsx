@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { orderService } from '../services/endpoints';
 import { formatPrice, formatDate, getStatusColor } from '../utils/helpers';
 import LoadingSpinner from '../components/LoadingSpinner';
+import OrderTimeline from '../components/OrderTimeline';
 import { FiArrowLeft, FiPackage } from 'react-icons/fi';
 
 const OrderDetailPage = () => {
@@ -42,6 +43,11 @@ const OrderDetailPage = () => {
           <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(order.orderStatus)}`}>{order.orderStatus}</span>
           <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(order.paymentStatus)}`}>{order.paymentStatus}</span>
         </div>
+      </div>
+
+      <div className="card mb-6">
+        <h3 className="font-semibold mb-2">Order Progress</h3>
+        <OrderTimeline currentStatus={order.orderStatus} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

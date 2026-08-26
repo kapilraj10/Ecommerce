@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { orderService, paymentService } from '../services/endpoints';
 import { formatPrice } from '../utils/helpers';
+import CouponInput from '../components/CouponInput';
 import toast from 'react-hot-toast';
 import { FiCreditCard, FiTruck, FiCheck } from 'react-icons/fi';
 
@@ -14,30 +15,23 @@ const CheckoutPage = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('COD');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [shipping, setShipping] = useState({
-    fullName: user?.name || '',
-    phone: user?.phone || '',
-    email: user?.email || '',
-    province: '',
-    district: '',
-    city: '',
-    address: '',
+    fullName: user?.name || '', phone: user?.phone || '', email: user?.email || '',
+    province: '', district: '', city: '', address: '',
   });
 
-  const handleShippingChange = (e) => {
-    setShipping({ ...shipping, [e.target.name]: e.target.value });
-  };
+  const handleShippingChange = (e) => setShipping({ ...shipping, [e.target.name]: e.target.value });
 
   const validateShipping = () => {
-    const required = ['fullName', 'phone', 'province', 'district', 'city', 'address'];
-    for (const field of required) {
-      if (!shipping[field]) {
-        toast.error(`${field.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())} is required`);
-        return false;
-      }
+    for (const field of ['fullName', 'phone', 'province', 'district', 'city', 'address']) {
+      if (!shipping[field]) { toast.error(`${field} is required`); return false; }
     }
     return true;
   };
+
+  const discount = appliedCoupon?.discount || 0;
+  const finalTotal = Math.max(0, total - discount);
 
   const handlePlaceOrder = async () => {
     setLoading(true);
@@ -61,15 +55,10 @@ const CheckoutPage = () => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to place order');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
-  if (cartItems.length === 0) {
-    navigate('/cart');
-    return null;
-  }
+  if (cartItems.length === 0) { navigate('/cart'); return null; }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -93,34 +82,13 @@ const CheckoutPage = () => {
         <div className="card">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><FiTruck className="h-5 w-5" /> Shipping Address</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-              <input name="fullName" value={shipping.fullName} onChange={handleShippingChange} className="input-field" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
-              <input name="phone" value={shipping.phone} onChange={handleShippingChange} className="input-field" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input name="email" value={shipping.email} onChange={handleShippingChange} className="input-field" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Province *</label>
-              <input name="province" value={shipping.province} onChange={handleShippingChange} className="input-field" placeholder="e.g. Bagmati" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">District *</label>
-              <input name="district" value={shipping.district} onChange={handleShippingChange} className="input-field" placeholder="e.g. Kathmandu" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
-              <input name="city" value={shipping.city} onChange={handleShippingChange} className="input-field" placeholder="e.g. Kathmandu" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
-              <input name="address" value={shipping.address} onChange={handleShippingChange} className="input-field" placeholder="Street address" />
-            </div>
+            <div><label className="block text-sm font-medium mb-1">Full Name *</label><input name="fullName" value={shipping.fullName} onChange={handleShippingChange} className="input-field" /></div>
+            <div><label className="block text-sm font-medium mb-1">Phone *</label><input name="phone" value={shipping.phone} onChange={handleShippingChange} className="input-field" /></div>
+            <div className="md:col-span-2"><label className="block text-sm font-medium mb-1">Email</label><input name="email" value={shipping.email} onChange={handleShippingChange} className="input-field" /></div>
+            <div><label className="block text-sm font-medium mb-1">Province *</label><input name="province" value={shipping.province} onChange={handleShippingChange} className="input-field" placeholder="e.g. Bagmati" /></div>
+            <div><label className="block text-sm font-medium mb-1">District *</label><input name="district" value={shipping.district} onChange={handleShippingChange} className="input-field" placeholder="e.g. Kathmandu" /></div>
+            <div><label className="block text-sm font-medium mb-1">City *</label><input name="city" value={shipping.city} onChange={handleShippingChange} className="input-field" /></div>
+            <div><label className="block text-sm font-medium mb-1">Address *</label><input name="address" value={shipping.address} onChange={handleShippingChange} className="input-field" placeholder="Street address" /></div>
           </div>
           <button onClick={() => { if (validateShipping()) setStep(2); }} className="btn-primary mt-6">Continue to Payment</button>
         </div>
@@ -133,12 +101,13 @@ const CheckoutPage = () => {
             {[{ id: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive your order' }, { id: 'Khalti', label: 'Khalti', desc: 'Pay online using Khalti ePayment' }].map(({ id, label, desc }) => (
               <label key={id} className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-colors ${paymentMethod === id ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}>
                 <input type="radio" name="payment" value={id} checked={paymentMethod === id} onChange={() => setPaymentMethod(id)} className="text-primary-600" />
-                <div>
-                  <p className="font-medium">{label}</p>
-                  <p className="text-sm text-gray-500">{desc}</p>
-                </div>
+                <div><p className="font-medium">{label}</p><p className="text-sm text-gray-500">{desc}</p></div>
               </label>
             ))}
+          </div>
+          <div className="mt-6">
+            <label className="block text-sm font-medium mb-2">Have a coupon?</label>
+            <CouponInput subtotal={subtotal} appliedCoupon={appliedCoupon} onApply={setAppliedCoupon} onRemove={() => setAppliedCoupon(null)} />
           </div>
           <div className="flex gap-3 mt-6">
             <button onClick={() => setStep(1)} className="btn-secondary">Back</button>
@@ -162,19 +131,24 @@ const CheckoutPage = () => {
             </div>
             <div>
               <h3 className="font-medium text-sm text-gray-700 mb-2">Items</h3>
-              <div className="space-y-2">
-                {cartItems.map((item) => (
-                  <div key={item.product} className="flex justify-between text-sm">
-                    <span>{item.name} x {item.quantity}</span>
-                    <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
-                  </div>
-                ))}
-              </div>
+              {cartItems.map((item) => (
+                <div key={item.product} className="flex justify-between text-sm py-1">
+                  <span>{item.name} x {item.quantity}</span>
+                  <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
+                </div>
+              ))}
             </div>
+            {appliedCoupon && (
+              <div className="bg-green-50 rounded-lg p-3 flex justify-between text-sm">
+                <span className="text-green-700">Coupon ({appliedCoupon.code})</span>
+                <span className="text-green-700 font-medium">-{formatPrice(appliedCoupon.discount)}</span>
+              </div>
+            )}
             <div className="border-t pt-4 space-y-1">
               <div className="flex justify-between text-sm"><span className="text-gray-600">Subtotal</span><span>{formatPrice(subtotal)}</span></div>
               <div className="flex justify-between text-sm"><span className="text-gray-600">Shipping</span><span>{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</span></div>
-              <div className="flex justify-between font-semibold text-lg pt-2 border-t"><span>Total</span><span className="text-primary-600">{formatPrice(total)}</span></div>
+              {discount > 0 && <div className="flex justify-between text-sm text-green-600"><span>Discount</span><span>-{formatPrice(discount)}</span></div>}
+              <div className="flex justify-between font-semibold text-lg pt-2 border-t"><span>Total</span><span className="text-primary-600">{formatPrice(finalTotal)}</span></div>
             </div>
           </div>
           <div className="flex gap-3 mt-6">

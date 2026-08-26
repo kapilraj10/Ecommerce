@@ -29,6 +29,19 @@ export const paymentService = {
   verifyKhalti: (data) => api.post('/payments/khalti/verify', data),
 };
 
+export const reviewService = {
+  getProductReviews: (productId, params) => api.get(`/reviews/product/${productId}`, { params }),
+  createReview: (data) => api.post('/reviews', data),
+  updateReview: (id, data) => api.put(`/reviews/${id}`, data),
+  deleteReview: (id) => api.delete(`/reviews/${id}`),
+  getMyReview: (productId) => api.get(`/reviews/my-review/${productId}`),
+};
+
+export const couponService = {
+  validate: (data) => api.post('/coupons/validate', data),
+  apply: (data) => api.post('/coupons/apply', data),
+};
+
 export const adminService = {
   getDashboard: () => api.get('/admin/dashboard'),
   getAllOrders: (params) => api.get('/admin/orders', { params }),
@@ -45,4 +58,8 @@ export const adminService = {
   createCategory: (data) => api.post('/admin/categories', data),
   updateCategory: (id, data) => api.put(`/admin/categories/${id}`, data),
   deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
+  getCoupons: () => api.get('/coupons', {}),
+  createCoupon: (data) => api.post('/coupons', data),
+  updateCoupon: (id, data) => api.put(`/coupons/${id}`, data),
+  deleteCoupon: (id) => api.delete(`/coupons/${id}`),
 };

@@ -11,13 +11,36 @@ exports.getDashboardStats = async (req, res, next) => {
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
     const pendingOrders = await Order.countDocuments({ orderStatus: "Pending" });
+    const processingOrders = await Order.countDocuments({ orderStatus: "Processing" });
+    const shippedOrders = await Order.countDocuments({ orderStatus: "Shipped" });
     const deliveredOrders = await Order.countDocuments({ orderStatus: "Delivered" });
+    const cancelledOrders = await Order.countDocuments({ orderStatus: "Cancelled" });
 
     const salesResult = await Order.aggregate([
       { $match: { paymentStatus: "Paid" } },
       { $group: { _id: null, totalSales: { $sum: "$totalPrice" } } },
     ]);
     const totalSales = salesResult.length > 0 ? salesResult[0].totalSales : 0;
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const monthlySalesAgg = await Order.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo }, paymentStatus: "Paid" } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          sales: { $sum: "$totalPrice" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthlySales = monthlySalesAgg.map((item) => {
+      const [year, month] = item._id.split("-");
+      return { name: `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`, sales: item.sales };
+    });
 
     const recentOrders = await Order.find()
       .populate("user", "name email")
@@ -29,8 +52,12 @@ exports.getDashboardStats = async (req, res, next) => {
       totalProducts,
       totalOrders,
       pendingOrders,
+      processingOrders,
+      shippedOrders,
       deliveredOrders,
+      cancelledOrders,
       totalSales,
+      monthlySales,
       recentOrders,
     });
   } catch (error) {
@@ -112,6 +139,14 @@ exports.updateOrderStatus = async (req, res, next) => {
         order.paymentStatus = "Paid";
       }
     }
+
+    if (!order.statusHistory) order.statusHistory = [];
+    order.statusHistory.push({
+      status: orderStatus,
+      paymentStatus: order.paymentStatus,
+      updatedAt: new Date(),
+      note: req.body.note || "",
+    });
 
     await order.save();
 

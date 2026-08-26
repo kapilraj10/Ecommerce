@@ -57,6 +57,32 @@
 - `server/controllers/paymentController.js` — Khalti initiate + verify handlers
 - `server/routes/paymentRoutes.js` — authenticated payment routes
 
+### Server Reviews
+- `server/models/Review.js` — Review with auto-calculated product rating
+- `server/controllers/reviewController.js` — CRUD + my-review per product
+- `server/routes/reviewRoutes.js` — public GET, authenticated write/update/delete
+
+### Server Wishlist
+- `server/models/Wishlist.js` — User wishlist with product refs
+- `server/controllers/wishlistController.js` — get, toggle, check
+- `server/routes/wishlistRoutes.js` — all authenticated
+
+### Server Coupons
+- `server/models/Coupon.js` — Coupon with percentage/fixed discount, expiry, usage limits
+- `server/controllers/couponController.js` — validate, apply, CRUD (admin)
+- `server/routes/couponRoutes.js` — validate/apply authenticated, CRUD admin-only
+
+### Server Uploads (Cloudinary)
+- `server/services/cloudinaryService.js` — upload, uploadMultiple, delete from Cloudinary
+- `server/services/upload.js` — multer config for local temp storage
+- `server/controllers/uploadController.js` — upload single/multiple, delete
+- `server/routes/uploadRoutes.js` — admin-only
+
+### Server Email / Password Reset
+- `server/services/emailService.js` — nodemailer with verification + reset email templates
+- `server/controllers/passwordResetController.js` — forgotPassword, resetPassword, verifyEmail, resendVerification
+- `server/routes/passwordResetRoutes.js` — public forgot/reset, authenticated resend
+
 ### Server Admin
 - `server/controllers/adminController.js` — dashboard stats, orders, users, products management
 - `server/routes/adminRoutes.js` — all admin routes with authenticateUser + authorizeRoles("admin")
@@ -64,33 +90,49 @@
 ### Client State
 - `client/src/context/AuthContext.jsx` — login, register, logout, updateProfile, loadUser
 - `client/src/context/CartContext.jsx` — addToCart, removeFromCart, updateQuantity, clearCart, totals
+- `client/src/context/WishlistContext.jsx` — toggleWishlist, isWishlisted, items
 - `client/src/context/ToastContext.jsx` — react-hot-toast wrapper
+
+### Client i18n
+- `client/src/utils/i18n.js` — i18next with English + Nepali translations, localStorage persistence
 
 ### Client API Layer
 - `client/src/services/api.js` — Axios instance with auth interceptor
-- `client/src/services/endpoints.js` — authService, productService, categoryService, orderService, paymentService, adminService
+- `client/src/services/endpoints.js` — authService, productService, categoryService, orderService, paymentService, reviewService, couponService, adminService
+
+### Client Shared Components
+- `client/src/components/ImageZoom.jsx` — mouse-follow zoom on product images
+- `client/src/components/OrderTimeline.jsx` — step-by-step order progress display
+- `client/src/components/SalesChart.jsx` — Recharts BarChart + PieChart
+- `client/src/components/CouponInput.jsx` — coupon code input + validate + apply
+- `client/src/components/LanguageToggle.jsx` — EN/NE language switcher
 
 ### Client Routing (App.jsx)
 - `/` — HomePage
 - `/products` — ProductsPage (with search/filter params)
-- `/products/:id` — ProductDetailPage
+- `/products/:id` — ProductDetailPage (reviews, zoom, wishlist)
 - `/cart` — CartPage
 - `/login` — LoginPage
 - `/register` — RegisterPage
-- `/checkout` — CheckoutPage (protected)
+- `/forgot-password` — ForgotPasswordPage
+- `/reset-password/:token` — ResetPasswordPage
+- `/verify-email` — VerifyEmailPage
+- `/checkout` — CheckoutPage (protected, with coupon support)
 - `/profile` — ProfilePage (protected)
 - `/my-orders` — MyOrdersPage (protected)
-- `/orders/:id` — OrderDetailPage (protected)
+- `/orders/:id` — OrderDetailPage (protected, with OrderTimeline)
+- `/wishlist` — WishlistPage (protected)
 - `/payment/khalti/verify` — PaymentSuccessPage (protected)
 - `/payment/failed` — PaymentFailedPage (protected)
-- `/admin` — AdminDashboard (admin)
+- `/admin` — AdminDashboard (admin, with sales charts)
 - `/admin/products` — AdminProducts (admin)
 - `/admin/products/create` — AdminCreateProduct (admin)
 - `/admin/products/edit/:id` — AdminEditProduct (admin)
 - `/admin/categories` — AdminCategories (admin)
 - `/admin/orders` — AdminOrders (admin)
-- `/admin/orders/:id` — AdminOrderDetail (admin)
+- `/admin/orders/:id` — AdminOrderDetail (admin, with timeline + history)
 - `/admin/users` — AdminUsers (admin)
+- `/admin/coupons` — AdminCoupons (admin)
 
 ## Admin Access
 
@@ -102,18 +144,28 @@
 ## Dependencies
 
 ### Server
-express, mongoose, jsonwebtoken, bcryptjs, cors, helmet, morgan, express-rate-limit, dotenv, axios, express-validator
+express, mongoose, jsonwebtoken, bcryptjs, cors, helmet, morgan, express-rate-limit, dotenv, axios, express-validator, cloudinary, multer, nodemailer, socket.io
 
 ### Client
-react, react-dom, react-router-dom, axios, react-hot-toast, react-icons
+react, react-dom, react-router-dom, axios, react-hot-toast, react-icons, socket.io-client, recharts, react-image-zoom, i18next, react-i18next
 Dev: vite, @vitejs/plugin-react, tailwindcss, postcss, autoprefixer
+
+## Implemented Enhancements
+
+- **Cloud image upload**: Cloudinary integration via `/api/upload/image`, `/api/upload/multiple`, `/api/upload`
+- **Email verification + password reset**: nodemailer with SMTP, token-based reset via `/api/auth/forgot-password`, `/api/auth/reset-password/:token`, `/api/auth/verify-email/:token`, `/api/auth/resend-verification`
+- **Product reviews/ratings**: Review model with auto-calculated product rating, `/api/reviews/*`
+- **Wishlist**: Toggle products in/out, `/api/wishlist/*`
+- **Coupon/discount system**: Percentage or fixed coupons with min purchase, max discount, usage limits, expiry. `/api/coupons/*`
+- **Real-time stock updates**: Socket.io, room per product, stock-update events emitted on order creation and product update
+- **Product image zoom**: ImageZoom component with mouse-follow zoom on product detail page
+- **Order tracking timeline**: OrderTimeline component showing Pending→Processing→Shipped→Delivered, status history stored on Order model
+- **Admin sales charts**: Recharts BarChart for monthly sales, PieChart for order status distribution on admin dashboard
+- **Multi-language**: i18next with English and Nepali (ne) translations, LanguageToggle component
 
 ## Known Limitations
 
-- No image upload to cloud storage (uses URL strings)
-- No email verification on registration
-- No password reset flow
-- No product reviews/ratings submission (only display)
-- No wishlist feature
-- No product image zoom on detail page
-- No real-time stock updates
+- Cloudinary credentials need real sandbox keys
+- SMTP credentials need real email provider
+- No image upload to cloud storage from admin product forms (URL input only)
+- No product video support

@@ -55,6 +55,14 @@ const orderSchema = new mongoose.Schema(
     totalPrice: { type: Number, required: true },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
+    statusHistory: [
+      {
+        status: { type: String },
+        paymentStatus: { type: String },
+        updatedAt: { type: Date, default: Date.now },
+        note: { type: String, default: "" },
+      },
+    ],
   },
   { timestamps: true }
 );

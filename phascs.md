@@ -99,14 +99,14 @@
 - [x] PRD.md
 - [x] .gitignore
 
-## Future Enhancements (Not Implemented)
-- [ ] Cloud image upload (Cloudinary/S3)
-- [ ] Email verification + password reset
-- [ ] Product reviews/ratings submission
-- [ ] Wishlist feature
-- [ ] Coupon/discount system
-- [ ] Real-time stock updates (WebSockets)
-- [ ] Product image zoom
-- [ ] Order tracking timeline
-- [ ] Admin sales charts/graphs
-- [ ] Multi-language support (Nepali/English)
+## Future Enhancements (Now Implemented)
+- [x] Cloud image upload (Cloudinary) — `server/services/cloudinaryService.js`, `server/routes/uploadRoutes.js`
+- [x] Email verification + password reset (nodemailer) — `server/services/emailService.js`, `server/routes/passwordResetRoutes.js`, ForgotPasswordPage, ResetPasswordPage, VerifyEmailPage
+- [x] Product reviews/ratings submission — `server/models/Review.js`, `server/routes/reviewRoutes.js`, review UI on ProductDetailPage
+- [x] Wishlist feature — `server/models/Wishlist.js`, `server/routes/wishlistRoutes.js`, WishlistContext, WishlistPage
+- [x] Coupon/discount system — `server/models/Coupon.js`, `server/routes/couponRoutes.js`, CouponInput component, AdminCoupons page
+- [x] Real-time stock updates (Socket.io) — `server/server.js` with Socket.io, stock-update events, SocketContext in frontend
+- [x] Product image zoom — ImageZoom component on ProductDetailPage
+- [x] Order tracking timeline — OrderTimeline component, statusHistory on Order model, shown on OrderDetailPage + AdminOrderDetail
+- [x] Admin sales charts/graphs — Recharts BarChart (monthly sales) + PieChart (order status) on AdminDashboard
+- [x] Multi-language support (Nepali/English) — i18next with full translation files, LanguageToggle component
