@@ -7,17 +7,16 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-  if (cached.conn) {
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
     cached.promise = mongoose
-      .connect(process.env.MONGODB_URI, opts)
+      .connect(process.env.MONGODB_URI, {
+        bufferCommands: false,
+        serverSelectionTimeoutMS: 5000,
+      })
       .then((mongoose) => {
         console.log(`MongoDB Connected: ${mongoose.connection.host}`);
         return mongoose;

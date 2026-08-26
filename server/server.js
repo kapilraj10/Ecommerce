@@ -9,8 +9,6 @@ const connectDB = require("./config/db");
 
 dotenv.config();
 
-connectDB();
-
 const app = express();
 
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -31,6 +29,16 @@ const limiter = rateLimit({
   message: { success: false, message: "Too many requests, please try again later" },
 });
 app.use("/api", limiter);
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("DB connection failed:", error.message);
+    res.status(500).json({ success: false, message: "Database connection failed" });
+  }
+});
 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/auth", require("./routes/passwordResetRoutes"));
