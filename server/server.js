@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const dotenv = require("dotenv");
+const path = require("path");
 const connectDB = require("./config/db");
 
 dotenv.config();
@@ -45,6 +46,13 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "Server is running", timestamp: new Date().toISOString() });
+});
+
+const clientDist = path.join(__dirname, "../client/dist");
+app.use(express.static(clientDist));
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  res.sendFile(path.join(clientDist, "index.html"));
 });
 
 app.use(require("./middleware/errorHandler"));
