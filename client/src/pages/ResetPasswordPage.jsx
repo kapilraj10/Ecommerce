@@ -30,25 +30,25 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="card">
-          <h2 className="text-2xl font-bold text-center mb-6">Reset Password</h2>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md animate-fade-in">
+        <div className="bg-white rounded-2xl border border-gray-100/80 shadow-card p-8">
+          <h2 className="text-2xl font-bold text-slate-900 text-center mb-6">Reset Password</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type={showPw ? 'text' : 'password'} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="New password" className="input-field pl-10 pr-10" />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {showPw ? <FiEyeOff /> : <FiEye />}
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" aria-label={showPw ? 'Hide password' : 'Show password'}>
+                  {showPw ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} placeholder="Confirm password" className="input-field pl-10" />
               </div>
             </div>

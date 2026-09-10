@@ -25,22 +25,22 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="card">
-          <h2 className="text-2xl font-bold text-center mb-2">Forgot Password</h2>
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md animate-fade-in">
+        <div className="bg-white rounded-2xl border border-gray-100/80 shadow-card p-8">
+          <h2 className="text-2xl font-bold text-slate-900 text-center mb-2">Forgot Password</h2>
           <p className="text-gray-500 text-sm text-center mb-6">Enter your email and we'll send you a reset link.</p>
           {sent ? (
             <div className="text-center py-4">
-              <div className="bg-green-50 text-green-700 p-4 rounded-lg mb-4">Reset link sent! Check your email.</div>
+              <div className="bg-green-50 text-green-700 p-4 rounded-xl mb-4 text-sm">Reset link sent! Check your email.</div>
               <Link to="/login" className="text-primary-600 hover:text-primary-700 text-sm font-medium">Back to Login</Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                 <div className="relative">
-                  <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" className="input-field pl-10" />
                 </div>
               </div>
@@ -49,7 +49,7 @@ const ForgotPasswordPage = () => {
               </button>
             </form>
           )}
-          <Link to="/login" className="flex items-center gap-1 text-gray-600 hover:text-primary-600 text-sm mt-4 justify-center">
+          <Link to="/login" className="flex items-center gap-1 text-gray-600 hover:text-primary-600 text-sm mt-4 justify-center transition-colors">
             <FiArrowLeft className="h-4 w-4" /> Back to Login
           </Link>
         </div>

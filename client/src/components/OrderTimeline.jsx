@@ -15,8 +15,10 @@ const OrderTimeline = ({ currentStatus }) => {
 
   if (isCancelled) {
     return (
-      <div className="flex items-center gap-3 py-4">
-        <div className="bg-red-100 p-2 rounded-full"><FiXCircle className="h-5 w-5 text-red-600" /></div>
+      <div className="flex items-center gap-3 py-5">
+        <div className="bg-red-50 p-2 rounded-full">
+          <FiXCircle className="h-5 w-5 text-red-500" />
+        </div>
         <div>
           <p className="font-medium text-red-600">Order Cancelled</p>
           <p className="text-xs text-gray-500">This order has been cancelled</p>
@@ -26,16 +28,16 @@ const OrderTimeline = ({ currentStatus }) => {
   }
 
   return (
-    <div className="flex items-center justify-between py-4">
+    <div className="flex items-center justify-between py-5 overflow-x-auto">
       {steps.map((step, idx) => {
         const isActive = idx <= currentIdx;
         const isCurrent = idx === currentIdx;
         const Icon = step.icon;
 
         return (
-          <div key={step.key} className="flex-1 flex flex-col items-center relative">
+          <div key={step.key} className="flex-1 flex flex-col items-center relative min-w-[70px]">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-              isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+              isActive ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'
             } ${isCurrent ? 'ring-2 ring-green-500 ring-offset-2' : ''}`}>
               {isActive && idx < currentIdx ? <FiCheck className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
             </div>

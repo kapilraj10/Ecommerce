@@ -15,7 +15,11 @@ export const productService = {
 };
 
 export const categoryService = {
-  getCategories: () => api.get('/categories'),
+  getCategories: (params) => api.get('/categories', { params }),
+};
+
+export const heroBannerService = {
+  getActive: () => api.get('/hero-banners'),
 };
 
 export const orderService = {
@@ -42,6 +46,18 @@ export const couponService = {
   apply: (data) => api.post('/coupons/apply', data),
 };
 
+export const uploadService = {
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/upload/image', formData);
+  },
+};
+
+export const contactService = {
+  submit: (data) => api.post('/contacts', data),
+};
+
 export const adminService = {
   getDashboard: () => api.get('/admin/dashboard'),
   getAllOrders: (params) => api.get('/admin/orders', { params }),
@@ -58,8 +74,19 @@ export const adminService = {
   createCategory: (data) => api.post('/admin/categories', data),
   updateCategory: (id, data) => api.put(`/admin/categories/${id}`, data),
   deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
+  reorderCategories: (orderedIds) => api.put('/admin/categories/reorder', { orderedIds }),
+  getHeroBanners: () => api.get('/admin/hero-banners'),
+  createHeroBanner: (data) => api.post('/admin/hero-banners', data),
+  updateHeroBanner: (id, data) => api.put(`/admin/hero-banners/${id}`, data),
+  deleteHeroBanner: (id) => api.delete(`/admin/hero-banners/${id}`),
+  reorderHeroBanners: (orderedIds) => api.put('/admin/hero-banners/reorder', { orderedIds }),
+  toggleHeroBanner: (id) => api.put(`/admin/hero-banners/${id}/toggle`),
   getCoupons: () => api.get('/coupons', {}),
   createCoupon: (data) => api.post('/coupons', data),
   updateCoupon: (id, data) => api.put(`/coupons/${id}`, data),
   deleteCoupon: (id) => api.delete(`/coupons/${id}`),
+  getContacts: (params) => api.get('/admin/contacts', { params }),
+  getContact: (id) => api.get(`/admin/contacts/${id}`),
+  updateContact: (id, data) => api.put(`/admin/contacts/${id}`, data),
+  deleteContact: (id) => api.delete(`/admin/contacts/${id}`),
 };

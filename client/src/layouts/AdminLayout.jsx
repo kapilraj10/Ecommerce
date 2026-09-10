@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { FiGrid, FiPackage, FiTag, FiShoppingBag, FiUsers, FiArrowLeft, FiPercent } from 'react-icons/fi';
+import { FiGrid, FiPackage, FiTag, FiShoppingBag, FiUsers, FiArrowLeft, FiPercent, FiImage, FiMessageSquare } from 'react-icons/fi';
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -8,9 +8,11 @@ const AdminLayout = () => {
     { to: '/admin', icon: FiGrid, label: 'Dashboard' },
     { to: '/admin/products', icon: FiPackage, label: 'Products' },
     { to: '/admin/categories', icon: FiTag, label: 'Categories' },
+    { to: '/admin/hero-banners', icon: FiImage, label: 'Hero Banners' },
     { to: '/admin/orders', icon: FiShoppingBag, label: 'Orders' },
     { to: '/admin/users', icon: FiUsers, label: 'Users' },
     { to: '/admin/coupons', icon: FiPercent, label: 'Coupons' },
+    { to: '/admin/contacts', icon: FiMessageSquare, label: 'Messages' },
   ];
 
   return (

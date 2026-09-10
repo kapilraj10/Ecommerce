@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { adminService, categoryService } from '../../services/endpoints';
 import toast from 'react-hot-toast';
+import MultiImageUploader from '../../components/MultiImageUploader';
 import { FiArrowLeft, FiSave } from 'react-icons/fi';
 
 const AdminCreateProduct = () => {
@@ -9,7 +10,7 @@ const AdminCreateProduct = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    name: '', description: '', price: '', discountPrice: '', category: '', brand: '', stock: '', images: '',
+    name: '', description: '', price: '', discountPrice: '', category: '', brand: '', stock: '', images: [],
   });
 
   useEffect(() => {
@@ -28,10 +29,10 @@ const AdminCreateProduct = () => {
     try {
       const payload = {
         ...form,
+        images: Array.isArray(form.images) ? form.images : form.images ? form.images.split(',').map((u) => u.trim()).filter(Boolean) : [],
         price: Number(form.price),
         discountPrice: form.discountPrice ? Number(form.discountPrice) : 0,
         stock: Number(form.stock) || 0,
-        images: form.images ? form.images.split(',').map((u) => u.trim()).filter(Boolean) : [],
       };
       await adminService.createProduct(payload);
       toast.success('Product created');
@@ -85,8 +86,12 @@ const AdminCreateProduct = () => {
           <input name="stock" type="number" value={form.stock} onChange={handleChange} className="input-field" min="0" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Image URLs (comma separated)</label>
-          <input name="images" value={form.images} onChange={handleChange} className="input-field" placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg" />
+          <MultiImageUploader
+            label="Product Images"
+            value={Array.isArray(form.images) ? form.images : form.images ? [form.images] : []}
+            onChange={(images) => setForm({ ...form, images })}
+            max={5}
+          />
         </div>
         <button type="submit" disabled={loading} className="btn-primary flex items-center gap-2">
           <FiSave className="h-4 w-4" /> {loading ? 'Creating...' : 'Create Product'}

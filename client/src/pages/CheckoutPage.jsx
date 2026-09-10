@@ -6,7 +6,7 @@ import { orderService, paymentService } from '../services/endpoints';
 import { formatPrice } from '../utils/helpers';
 import CouponInput from '../components/CouponInput';
 import toast from 'react-hot-toast';
-import { FiCreditCard, FiTruck, FiCheck } from 'react-icons/fi';
+import { FiCreditCard, FiTruck, FiCheck, FiMapPin } from 'react-icons/fi';
 
 const CheckoutPage = () => {
   const { cartItems, subtotal, shippingCost, total, clearCart } = useCart();
@@ -61,8 +61,8 @@ const CheckoutPage = () => {
   if (cartItems.length === 0) { navigate('/cart'); return null; }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 mb-6">Checkout</h1>
 
       <div className="flex items-center justify-center mb-8">
         {['Shipping', 'Payment', 'Review'].map((label, i) => (
@@ -78,87 +78,128 @@ const CheckoutPage = () => {
         ))}
       </div>
 
-      {step === 1 && (
-        <div className="card">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><FiTruck className="h-5 w-5" /> Shipping Address</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium mb-1">Full Name *</label><input name="fullName" value={shipping.fullName} onChange={handleShippingChange} className="input-field" /></div>
-            <div><label className="block text-sm font-medium mb-1">Phone *</label><input name="phone" value={shipping.phone} onChange={handleShippingChange} className="input-field" /></div>
-            <div className="md:col-span-2"><label className="block text-sm font-medium mb-1">Email</label><input name="email" value={shipping.email} onChange={handleShippingChange} className="input-field" /></div>
-            <div><label className="block text-sm font-medium mb-1">Province *</label><input name="province" value={shipping.province} onChange={handleShippingChange} className="input-field" placeholder="e.g. Bagmati" /></div>
-            <div><label className="block text-sm font-medium mb-1">District *</label><input name="district" value={shipping.district} onChange={handleShippingChange} className="input-field" placeholder="e.g. Kathmandu" /></div>
-            <div><label className="block text-sm font-medium mb-1">City *</label><input name="city" value={shipping.city} onChange={handleShippingChange} className="input-field" /></div>
-            <div><label className="block text-sm font-medium mb-1">Address *</label><input name="address" value={shipping.address} onChange={handleShippingChange} className="input-field" placeholder="Street address" /></div>
-          </div>
-          <button onClick={() => { if (validateShipping()) setStep(2); }} className="btn-primary mt-6">Continue to Payment</button>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="card">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2"><FiCreditCard className="h-5 w-5" /> Payment Method</h2>
-          <div className="space-y-3">
-            {[{ id: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive your order' }, { id: 'Khalti', label: 'Khalti', desc: 'Pay online using Khalti ePayment' }].map(({ id, label, desc }) => (
-              <label key={id} className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-colors ${paymentMethod === id ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                <input type="radio" name="payment" value={id} checked={paymentMethod === id} onChange={() => setPaymentMethod(id)} className="text-primary-600" />
-                <div><p className="font-medium">{label}</p><p className="text-sm text-gray-500">{desc}</p></div>
-              </label>
-            ))}
-          </div>
-          <div className="mt-6">
-            <label className="block text-sm font-medium mb-2">Have a coupon?</label>
-            <CouponInput subtotal={subtotal} appliedCoupon={appliedCoupon} onApply={setAppliedCoupon} onRemove={() => setAppliedCoupon(null)} />
-          </div>
-          <div className="flex gap-3 mt-6">
-            <button onClick={() => setStep(1)} className="btn-secondary">Back</button>
-            <button onClick={() => setStep(3)} className="btn-primary">Review Order</button>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="card">
-          <h2 className="text-lg font-semibold mb-4">Review Order</h2>
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-sm text-gray-700 mb-2">Shipping To</h3>
-              <p className="text-sm">{shipping.fullName}, {shipping.phone}</p>
-              <p className="text-sm text-gray-600">{shipping.address}, {shipping.city}, {shipping.district}, {shipping.province}</p>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-sm text-gray-700 mb-2">Payment</h3>
-              <p className="text-sm">{paymentMethod === 'COD' ? 'Cash on Delivery' : 'Khalti Online Payment'}</p>
-            </div>
-            <div>
-              <h3 className="font-medium text-sm text-gray-700 mb-2">Items</h3>
-              {cartItems.map((item) => (
-                <div key={item.product} className="flex justify-between text-sm py-1">
-                  <span>{item.name} x {item.quantity}</span>
-                  <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
-                </div>
-              ))}
-            </div>
-            {appliedCoupon && (
-              <div className="bg-green-50 rounded-lg p-3 flex justify-between text-sm">
-                <span className="text-green-700">Coupon ({appliedCoupon.code})</span>
-                <span className="text-green-700 font-medium">-{formatPrice(appliedCoupon.discount)}</span>
+      <div className="max-w-3xl mx-auto">
+        {step === 1 && (
+          <div className="bg-white rounded-2xl border border-gray-100/80 p-6 animate-fade-in">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <FiTruck className="h-5 w-5 text-primary-600" /> Shipping Address
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+                <input name="fullName" value={shipping.fullName} onChange={handleShippingChange} className="input-field" />
               </div>
-            )}
-            <div className="border-t pt-4 space-y-1">
-              <div className="flex justify-between text-sm"><span className="text-gray-600">Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-              <div className="flex justify-between text-sm"><span className="text-gray-600">Shipping</span><span>{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</span></div>
-              {discount > 0 && <div className="flex justify-between text-sm text-green-600"><span>Discount</span><span>-{formatPrice(discount)}</span></div>}
-              <div className="flex justify-between font-semibold text-lg pt-2 border-t"><span>Total</span><span className="text-primary-600">{formatPrice(finalTotal)}</span></div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone *</label>
+                <input name="phone" value={shipping.phone} onChange={handleShippingChange} className="input-field" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                <input name="email" value={shipping.email} onChange={handleShippingChange} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Province *</label>
+                <input name="province" value={shipping.province} onChange={handleShippingChange} className="input-field" placeholder="e.g. Bagmati" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">District *</label>
+                <input name="district" value={shipping.district} onChange={handleShippingChange} className="input-field" placeholder="e.g. Kathmandu" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
+                <input name="city" value={shipping.city} onChange={handleShippingChange} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Address *</label>
+                <input name="address" value={shipping.address} onChange={handleShippingChange} className="input-field" placeholder="Street address" />
+              </div>
             </div>
-          </div>
-          <div className="flex gap-3 mt-6">
-            <button onClick={() => setStep(2)} className="btn-secondary">Back</button>
-            <button onClick={handlePlaceOrder} disabled={loading} className="btn-primary flex-1 py-3">
-              {loading ? 'Processing...' : paymentMethod === 'Khalti' ? 'Pay with Khalti' : 'Place Order'}
+            <button onClick={() => { if (validateShipping()) setStep(2); }} className="btn-primary mt-6 flex items-center gap-2">
+              Continue to Payment <FiCreditCard className="h-4 w-4" />
             </button>
           </div>
-        </div>
-      )}
+        )}
+
+        {step === 2 && (
+          <div className="bg-white rounded-2xl border border-gray-100/80 p-6 animate-fade-in">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <FiCreditCard className="h-5 w-5 text-primary-600" /> Payment Method
+            </h2>
+            <div className="space-y-3">
+              {[{ id: 'COD', label: 'Cash on Delivery', desc: 'Pay when you receive your order' }, { id: 'Khalti', label: 'Khalti', desc: 'Pay online using Khalti ePayment' }].map(({ id, label, desc }) => (
+                <label key={id} className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${paymentMethod === id ? 'border-primary-500 bg-primary-50/50' : 'border-gray-200 hover:border-gray-300'}`}>
+                  <input type="radio" name="payment" value={id} checked={paymentMethod === id} onChange={() => setPaymentMethod(id)} className="text-primary-600" />
+                  <div>
+                    <p className="font-medium text-slate-800">{label}</p>
+                    <p className="text-sm text-gray-500">{desc}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Have a coupon?</label>
+              <CouponInput subtotal={subtotal} appliedCoupon={appliedCoupon} onApply={setAppliedCoupon} onRemove={() => setAppliedCoupon(null)} />
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setStep(1)} className="btn-secondary flex items-center gap-2">
+                <FiTruck className="h-4 w-4" /> Back
+              </button>
+              <button onClick={() => setStep(3)} className="btn-primary flex-1">Review Order</button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="bg-white rounded-2xl border border-gray-100/80 p-6 animate-fade-in">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">Review Order</h2>
+            <div className="space-y-4">
+              <div className="bg-gray-50/80 rounded-xl p-4 border border-gray-100/80">
+                <h3 className="font-medium text-sm text-gray-700 mb-2 flex items-center gap-1.5">
+                  <FiMapPin className="h-4 w-4 text-primary-600" /> Shipping To
+                </h3>
+                <p className="text-sm text-slate-800">{shipping.fullName}, {shipping.phone}</p>
+                <p className="text-sm text-gray-600">{shipping.address}, {shipping.city}, {shipping.district}, {shipping.province}</p>
+              </div>
+              <div className="bg-gray-50/80 rounded-xl p-4 border border-gray-100/80">
+                <h3 className="font-medium text-sm text-gray-700 mb-2 flex items-center gap-1.5">
+                  <FiCreditCard className="h-4 w-4 text-primary-600" /> Payment
+                </h3>
+                <p className="text-sm text-slate-800">{paymentMethod === 'COD' ? 'Cash on Delivery' : 'Khalti Online Payment'}</p>
+              </div>
+              <div>
+                <h3 className="font-medium text-sm text-gray-700 mb-2">Items</h3>
+                {cartItems.map((item) => (
+                  <div key={item.product} className="flex justify-between text-sm py-1">
+                    <span className="text-gray-700">{item.name} x {item.quantity}</span>
+                    <span className="font-medium text-slate-900">{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+              {appliedCoupon && (
+                <div className="bg-green-50 rounded-xl p-3 flex justify-between text-sm">
+                  <span className="text-green-700">Coupon ({appliedCoupon.code})</span>
+                  <span className="text-green-700 font-medium">-{formatPrice(appliedCoupon.discount)}</span>
+                </div>
+              )}
+              <div className="border-t border-gray-100 pt-4 space-y-1.5">
+                <div className="flex justify-between text-sm"><span className="text-gray-600">Subtotal</span><span className="font-medium">{formatPrice(subtotal)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-600">Shipping</span><span className="font-medium">{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</span></div>
+                {discount > 0 && <div className="flex justify-between text-sm text-green-600"><span>Discount</span><span>-{formatPrice(discount)}</span></div>}
+                <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-100">
+                  <span className="text-slate-900">Total</span>
+                  <span className="text-primary-600">{formatPrice(finalTotal)}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setStep(2)} className="btn-secondary">Back</button>
+              <button onClick={handlePlaceOrder} disabled={loading} className="btn-primary flex-1 py-3">
+                {loading ? 'Processing...' : paymentMethod === 'Khalti' ? 'Pay with Khalti' : 'Place Order'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

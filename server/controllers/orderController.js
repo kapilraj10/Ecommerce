@@ -2,6 +2,7 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const sendResponse = require("../utils/apiResponse");
 const AppError = require("../utils/AppError");
+const emailService = require("../services/emailService");
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -66,6 +67,18 @@ exports.createOrder = async (req, res, next) => {
     }
 
     await order.populate("user", "name email phone");
+
+    const customerEmail = req.user.email || order.shippingAddress.email;
+    emailService.sendOrderConfirmationEmail(customerEmail, {
+      name: order.shippingAddress.fullName || req.user.name,
+      orderId: order._id.toString().slice(-8).toUpperCase(),
+      items: order.orderItems,
+      subtotal: order.subtotal,
+      shippingCost: order.shippingCost,
+      totalPrice: order.totalPrice,
+      paymentMethod: order.paymentMethod,
+      shippingAddress: order.shippingAddress,
+    });
 
     sendResponse(res, 201, true, "Order created", order);
   } catch (error) {

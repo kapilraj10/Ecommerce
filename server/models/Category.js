@@ -18,6 +18,19 @@ const categorySchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    order: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    productCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

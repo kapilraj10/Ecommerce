@@ -40,7 +40,7 @@ export const CartProvider = ({ children }) => {
         {
           product: product._id,
           name: product.name,
-          image: product.images[0] || '',
+          image: (product.images && product.images[0]) || '',
           price: product.discountPrice > 0 ? product.discountPrice : product.price,
           originalPrice: product.price,
           quantity,

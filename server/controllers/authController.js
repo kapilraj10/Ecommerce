@@ -2,6 +2,7 @@ const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 const sendResponse = require("../utils/apiResponse");
 const AppError = require("../utils/AppError");
+const emailService = require("../services/emailService");
 
 exports.register = async (req, res, next) => {
   try {
@@ -27,6 +28,8 @@ exports.register = async (req, res, next) => {
     const user = await User.create({ name, email, phone, password });
 
     const token = generateToken(user._id);
+
+    emailService.sendWelcomeEmail(user.email, user.name);
 
     sendResponse(res, 201, true, "Registration successful", {
       user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role },

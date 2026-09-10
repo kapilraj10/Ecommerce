@@ -5,13 +5,14 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const dotenv = require("dotenv");
 const path = require("path");
+const fs = require("fs");
 const connectDB = require("./config/db");
 
 dotenv.config();
 
 const app = express();
 
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false }));
 app.use(morgan("dev"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -44,12 +45,14 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/auth", require("./routes/passwordResetRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/categories", require("./routes/categoryRoutes"));
+app.use("/api/hero-banners", require("./routes/heroBannerRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/coupons", require("./routes/couponRoutes"));
 app.use("/api/upload", require("./routes/uploadRoutes"));
+app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
 app.get("/api/health", (req, res) => {
@@ -57,6 +60,11 @@ app.get("/api/health", (req, res) => {
 });
 
 const clientDist = path.join(__dirname, "../client/dist");
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use("/uploads", express.static(uploadsDir));
 app.use(express.static(clientDist));
 app.get("*", (req, res, next) => {
   if (req.path.startsWith("/api")) return next();

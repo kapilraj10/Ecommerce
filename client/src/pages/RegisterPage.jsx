@@ -37,45 +37,48 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
-        <div className="card">
-          <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
+      <div className="w-full max-w-md animate-fade-in">
+        <div className="bg-white rounded-2xl border border-gray-100/80 shadow-card p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-slate-900">Create Account</h2>
+            <p className="text-gray-500 text-sm mt-1">Join TEKORA and start shopping</p>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
               <div className="relative">
-                <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Enter your name" className="input-field pl-10" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
               <div className="relative">
-                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Enter your email" className="input-field pl-10" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
               <div className="relative">
-                <FiPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="text" name="phone" value={form.phone} onChange={handleChange} placeholder="Enter your phone number" className="input-field pl-10" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type={showPassword ? 'text' : 'password'} name="password" value={form.password} onChange={handleChange} placeholder="Create a password" className="input-field pl-10 pr-10" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  {showPassword ? <FiEyeOff /> : <FiEye />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                  {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} placeholder="Confirm your password" className="input-field pl-10" />
               </div>
             </div>
@@ -84,7 +87,8 @@ const RegisterPage = () => {
             </button>
           </form>
           <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account? <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">Sign in</Link>
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">Sign in</Link>
           </p>
         </div>
       </div>

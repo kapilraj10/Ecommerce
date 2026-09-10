@@ -13,11 +13,12 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-8">
+    <div className="flex items-center justify-center gap-2 mt-10">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+        aria-label="Previous page"
       >
         <FiChevronLeft className="h-4 w-4" />
       </button>
@@ -28,10 +29,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+            className={`min-w-[36px] h-9 rounded-xl text-sm font-medium transition-all duration-200 ${
               currentPage === page
-                ? 'bg-primary-600 text-white'
-                : 'border border-gray-200 hover:bg-gray-50'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'border border-gray-200 hover:bg-gray-50 text-gray-600'
             }`}
           >
             {page}
@@ -41,7 +42,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+        aria-label="Next page"
       >
         <FiChevronRight className="h-4 w-4" />
       </button>

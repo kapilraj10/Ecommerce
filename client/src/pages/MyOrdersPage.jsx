@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { orderService } from '../services/endpoints';
 import { formatPrice, formatDate, getStatusColor } from '../utils/helpers';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { SkeletonCard } from '../components/Skeleton';
 import Pagination from '../components/Pagination';
-import { FiPackage, FiEye } from 'react-icons/fi';
+import { FiPackage, FiEye, FiChevronRight } from 'react-icons/fi';
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -31,19 +32,21 @@ const MyOrdersPage = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">My Orders</h1>
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 mb-6">My Orders</h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-16">
-          <FiPackage className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+        <div className="text-center py-16 bg-gray-50/60 rounded-2xl border border-gray-100/80">
+          <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+            <FiPackage className="h-7 w-7 text-gray-400" />
+          </div>
           <p className="text-gray-500 text-lg mb-4">No orders yet</p>
           <Link to="/products" className="btn-primary">Start Shopping</Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="max-w-4xl mx-auto space-y-4">
           {orders.map((order) => (
-            <div key={order._id} className="bg-white rounded-xl border border-gray-100 p-5">
+            <div key={order._id} className="bg-white rounded-2xl border border-gray-100/80 p-5 hover:shadow-card transition-shadow duration-200">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-xs text-gray-500">Order #{order._id.slice(-8).toUpperCase()}</p>
@@ -60,13 +63,13 @@ const MyOrdersPage = () => {
                 ))}
                 {order.orderItems.length > 2 && <p className="text-xs text-gray-400">+{order.orderItems.length - 2} more items</p>}
               </div>
-              <div className="flex items-center justify-between pt-3 border-t">
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                 <div>
                   <span className="text-xs text-gray-500">{order.paymentMethod}</span>
-                  <p className="font-semibold">{formatPrice(order.totalPrice)}</p>
+                  <p className="font-semibold text-slate-900">{formatPrice(order.totalPrice)}</p>
                 </div>
-                <Link to={`/orders/${order._id}`} className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1">
-                  <FiEye className="h-4 w-4" /> View Details
+                <Link to={`/orders/${order._id}`} className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center gap-1 transition-colors">
+                  View Details <FiChevronRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </div>

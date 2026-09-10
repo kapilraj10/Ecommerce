@@ -6,6 +6,7 @@
     "build": "cd client && npm install && npm run build",
     "start": "cd server && node server.js",
     "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev"
+    "dev:client": "cd client && npm run dev",
+    "seed:banners": "cd server && node seedBanners.js"
   }
 }

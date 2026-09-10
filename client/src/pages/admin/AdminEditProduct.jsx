@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { adminService, categoryService, productService } from '../../services/endpoints';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import MultiImageUploader from '../../components/MultiImageUploader';
 import { FiArrowLeft, FiSave } from 'react-icons/fi';
 
 const AdminEditProduct = () => {
@@ -12,7 +13,7 @@ const AdminEditProduct = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
-    name: '', description: '', price: '', discountPrice: '', category: '', brand: '', stock: '', images: '',
+    name: '', description: '', price: '', discountPrice: '', category: '', brand: '', stock: '', images: [],
   });
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const AdminEditProduct = () => {
         setForm({
           name: p.name, description: p.description, price: p.price, discountPrice: p.discountPrice || '',
           category: p.category?._id || '', brand: p.brand || '', stock: p.stock,
-          images: p.images?.join(', ') || '',
+          images: p.images || [],
         });
         setCategories(catRes.data.data);
       } catch (err) {
@@ -46,10 +47,10 @@ const AdminEditProduct = () => {
     try {
       const payload = {
         ...form,
+        images: Array.isArray(form.images) ? form.images : form.images ? form.images.split(',').map((u) => u.trim()).filter(Boolean) : [],
         price: Number(form.price),
         discountPrice: form.discountPrice ? Number(form.discountPrice) : 0,
         stock: Number(form.stock) || 0,
-        images: form.images ? form.images.split(',').map((u) => u.trim()).filter(Boolean) : [],
       };
       await adminService.updateProduct(id, payload);
       toast.success('Product updated');
@@ -105,8 +106,12 @@ const AdminEditProduct = () => {
           <input name="stock" type="number" value={form.stock} onChange={handleChange} className="input-field" min="0" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Image URLs (comma separated)</label>
-          <input name="images" value={form.images} onChange={handleChange} className="input-field" />
+          <MultiImageUploader
+            label="Product Images"
+            value={Array.isArray(form.images) ? form.images : form.images ? [form.images] : []}
+            onChange={(images) => setForm({ ...form, images })}
+            max={5}
+          />
         </div>
         <button type="submit" disabled={saving} className="btn-primary flex items-center gap-2">
           <FiSave className="h-4 w-4" /> {saving ? 'Saving...' : 'Update Product'}

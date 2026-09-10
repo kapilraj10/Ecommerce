@@ -5,12 +5,16 @@ export const ToastProvider = ({ children }) => {
     <>
       <Toaster
         position="top-right"
+        gutter={12}
         toastOptions={{
           duration: 3000,
           style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
+            borderRadius: '12px',
+            background: '#1e293b',
+            color: '#f8fafc',
+            padding: '12px 16px',
+            fontSize: '14px',
+            boxShadow: '0 10px 25px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
           },
           success: {
             iconTheme: { primary: '#22c55e', secondary: '#fff' },

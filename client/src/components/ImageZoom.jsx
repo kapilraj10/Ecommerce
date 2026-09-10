@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const ImageZoom = ({ src, alt = '' }) => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 50, y: 50 });
   const [showZoom, setShowZoom] = useState(false);
 
   const handleMouseMove = (e) => {
@@ -12,23 +12,25 @@ const ImageZoom = ({ src, alt = '' }) => {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-xl cursor-crosshair">
+    <div
+      className="relative overflow-hidden rounded-2xl cursor-crosshair w-full h-full"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setShowZoom(true)}
+      onMouseLeave={() => setShowZoom(false)}
+    >
       <img
         src={src}
         alt={alt}
-        className="w-full h-full object-cover"
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setShowZoom(true)}
-        onMouseLeave={() => setShowZoom(false)}
+        className="w-full h-full object-contain transition-opacity duration-200"
+        style={{ opacity: showZoom ? 0 : 1 }}
       />
       {showZoom && (
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 transition-opacity duration-100"
           style={{
             backgroundImage: `url(${src})`,
-            backgroundSize: '250%',
+            backgroundSize: '200%',
             backgroundPosition: `${position.x}% ${position.y}%`,
-            opacity: 0.9,
           }}
         />
       )}

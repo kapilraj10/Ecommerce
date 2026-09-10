@@ -4,6 +4,7 @@ const Order = require("../models/Order");
 const Category = require("../models/Category");
 const sendResponse = require("../utils/apiResponse");
 const AppError = require("../utils/AppError");
+const emailService = require("../services/emailService");
 
 exports.getDashboardStats = async (req, res, next) => {
   try {
@@ -121,10 +122,12 @@ exports.updateOrderStatus = async (req, res, next) => {
       return next(new AppError("Invalid order status", 400));
     }
 
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate("user", "name email");
     if (!order) {
       return next(new AppError("Order not found", 404));
     }
+
+    const previouslyShippedOrDelivered = ["Shipped", "Delivered"].includes(order.orderStatus);
 
     if (orderStatus === "Cancelled" && order.orderStatus === "Delivered") {
       return next(new AppError("Cannot cancel a delivered order", 400));
@@ -149,6 +152,21 @@ exports.updateOrderStatus = async (req, res, next) => {
     });
 
     await order.save();
+
+    if (!previouslyShippedOrDelivered) {
+      const customerEmail = order.shippingAddress.email || order.user?.email;
+      if (customerEmail) {
+        await emailService.sendOrderStatusEmail(customerEmail, {
+          name: order.shippingAddress.fullName || order.user?.name,
+          orderId: order._id.toString().slice(-8).toUpperCase(),
+          status: orderStatus,
+          note: req.body.note || "",
+          items: order.orderItems,
+          totalPrice: order.totalPrice,
+          shippingAddress: order.shippingAddress,
+        });
+      }
+    }
 
     sendResponse(res, 200, true, "Order status updated", order);
   } catch (error) {

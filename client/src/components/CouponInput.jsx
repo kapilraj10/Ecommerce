@@ -29,12 +29,12 @@ const CouponInput = ({ subtotal, onApply, onRemove, appliedCoupon }) => {
 
   if (appliedCoupon) {
     return (
-      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg p-3">
+      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl p-3">
         <FiTag className="h-4 w-4 text-green-600" />
         <span className="text-sm font-medium text-green-700 flex-1">
           {appliedCoupon.code} — Rs. {appliedCoupon.discount} off
         </span>
-        <button onClick={handleRemove} className="text-green-600 hover:text-red-600 transition-colors">
+        <button onClick={handleRemove} className="text-green-600 hover:text-red-600 transition-colors p-1 hover:bg-red-50 rounded-lg" aria-label="Remove coupon">
           <FiX className="h-4 w-4" />
         </button>
       </div>

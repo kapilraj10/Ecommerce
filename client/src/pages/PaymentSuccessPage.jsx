@@ -32,14 +32,16 @@ const PaymentSuccessPage = () => {
     verifyPayment();
   }, [searchParams]);
 
-  if (loading) return <LoadingSpinner fullScreen />;
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4">
-      <div className="text-center max-w-md">
-        <FiCheckCircle className={`h-20 w-20 mx-auto mb-4 ${verified ? 'text-green-500' : 'text-yellow-500'}`} />
-        <h1 className="text-2xl font-bold mb-2">{verified ? 'Payment Successful!' : 'Payment Processing'}</h1>
-        <p className="text-gray-600 mb-8">
+    <div className="min-h-[70vh] flex items-center justify-center px-4 py-8">
+      <div className="text-center max-w-md animate-fade-in">
+        <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${verified ? 'bg-green-50' : 'bg-yellow-50'}`}>
+          <FiCheckCircle className={`h-10 w-10 ${verified ? 'text-green-500' : 'text-yellow-500'}`} />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">{verified ? 'Payment Successful!' : 'Payment Processing'}</h1>
+        <p className="text-gray-500 mb-8">
           {verified ? 'Your payment has been confirmed. Thank you for your purchase!' : 'Your payment is being processed. Please check back later.'}
         </p>
         <div className="flex gap-3 justify-center">
